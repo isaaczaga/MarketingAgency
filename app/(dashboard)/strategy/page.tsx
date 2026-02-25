@@ -1,10 +1,9 @@
 "use client";
 
 import { useAutopilot } from "@/lib/hooks/use-autopilot";
-import { useMarketingPlan, MarketingTask } from "@/lib/hooks/use-marketing-plan";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Play, Pause, Eye, CheckCircle2, Circle, Rocket, ArrowRight, FileText, Video, Mic, TrendingUp, ChevronRight, Search } from "lucide-react";
+import { Loader2, Play, Pause, Eye, CheckCircle2, Circle, Rocket, FileText, Video, Mic, TrendingUp, ChevronRight, Search } from "lucide-react";
 
 import {
     Dialog,
@@ -17,25 +16,48 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Suspense, useEffect, useRef, useState } from "react";
+import axios from "axios";
+import { DigitalStrategy, ContentItem, StrategyTask } from '@/lib/types';
 
 function StrategyContent() {
-    const { plan, updateTaskStatus } = useMarketingPlan();
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { isActive, isExecuting, currentTaskId, toggleAutopilot } = useAutopilot();
-    const [viewingTask, setViewingTask] = useState<MarketingTask | null>(null);
+    const { isActive, currentTaskId, toggleAutopilot } = useAutopilot();
+    const [strategy, setStrategy] = useState<DigitalStrategy | null>(null);
+    const [contentItems, setContentItems] = useState<ContentItem[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [viewingTask, setViewingTask] = useState<StrategyTask | null>(null);
     const hasAutoStarted = useRef(false);
 
     useEffect(() => {
+        const fetchState = async () => {
+            try {
+                const res = await axios.get('/api/autonomous/state');
+                setStrategy(res.data.strategy);
+                setContentItems(res.data.content || []);
+            } catch (error) {
+                console.error("Failed to load state", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchState();
+    }, []);
+
+    useEffect(() => {
         const autoStart = searchParams.get("autoStart") === "true";
-        if (autoStart && !isActive && !hasAutoStarted.current && plan) {
+        if (autoStart && !isActive && !hasAutoStarted.current && strategy) {
             hasAutoStarted.current = true;
             toggleAutopilot();
             toast.info("Auto-Pilot sequence started automatically!");
         }
-    }, [searchParams, isActive, toggleAutopilot, plan]);
+    }, [searchParams, isActive, toggleAutopilot, strategy]);
 
-    if (!plan) {
+    if (loading) {
+        return <div className="p-8 text-center py-20 animate-pulse">Loading Strategy Board...</div>;
+    }
+
+    if (!strategy) {
         return (
             <div className="p-8 text-center py-20">
                 <div className="max-w-md mx-auto space-y-6">
@@ -52,7 +74,7 @@ function StrategyContent() {
         );
     }
 
-    const getIcon = (type: MarketingTask['type']) => {
+    const getIcon = (type: string) => {
         switch (type) {
             case 'article': return <FileText className="h-4 w-4" />;
             case 'video': return <Video className="h-4 w-4" />;
@@ -63,8 +85,8 @@ function StrategyContent() {
         }
     };
 
-    const handleExecuteTask = (task: MarketingTask) => {
-        if (task.status === 'completed') {
+    const handleExecuteTask = (task: StrategyTask) => {
+        if (task.status !== 'PLANNED') {
             setViewingTask(task);
             return;
         }
@@ -74,8 +96,6 @@ function StrategyContent() {
             return;
         }
 
-        console.log("Executing task:", task);
-
         // Redirect to the appropriate tool page with pre-filled context
         const query = new URLSearchParams({
             taskId: task.id,
@@ -83,27 +103,32 @@ function StrategyContent() {
             description: task.description
         }).toString();
 
-        // Fallback or mapping for non-standard task definitions
-        const taskType = (task.type || (task as any).category?.toLowerCase()) as any;
-
-        switch (taskType) {
+        switch (task.type) {
             case 'article': router.push(`/content/articles?${query}`); break;
             case 'video': router.push(`/content/video?${query}`); break;
             case 'podcast': router.push(`/content/podcast?${query}`); break;
             case 'ad': router.push(`/campaigns?${query}`); break;
             case 'keyword':
-            case 'analysis': // Fallback for some generated plans
                 router.push(`/content/seo?${query}`);
                 break;
             default:
-                console.error("Unsupported task type:", taskType, task);
-                toast.error(`Task type "${taskType || 'unknown'}" not implemented yet`);
+                toast.error(`Task type "${task.type}" not implemented yet`);
         }
     };
 
-    const completedTasks = plan.strategy?.phases?.flatMap(p => p.tasks)?.filter(t => t.status === 'completed')?.length || 0;
-    const totalTasks = plan.strategy?.phases?.flatMap(p => p.tasks)?.length || 0;
+    const completedTasks = strategy.phases?.flatMap(p => p.tasks)?.filter(t => t.status !== 'PLANNED')?.length || 0;
+    const totalTasks = strategy.phases?.flatMap(p => p.tasks)?.length || 0;
     const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+    // Attempt to locate the exact content record
+    let viewingContent = viewingTask && contentItems ? contentItems.find(c => c.id === viewingTask.contentId) : null;
+
+    // In case there is no explicit contentId but it matches by Task ID (earlier implementation)
+    if (viewingTask && !viewingContent) {
+        viewingContent = contentItems.find(c => c.taskId === viewingTask.id) || null;
+    }
+
+    const resultText = viewingContent ? (typeof viewingContent.content === 'string' ? viewingContent.content : JSON.stringify(viewingContent.content, null, 2)) : "No content generated yet.";
 
     return (
         <div className="p-8 max-w-6xl mx-auto">
@@ -113,10 +138,10 @@ function StrategyContent() {
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-3">
                             <span className="text-sm font-medium px-3 py-1 bg-blue-100 text-blue-700 rounded-full">
-                                {plan.brandProfile.title}
+                                {strategy.brandProfile.title}
                             </span>
                             <span className="text-sm text-muted-foreground">
-                                Plan generated on {new Date(plan.createdAt).toLocaleDateString()}
+                                Plan generated on {new Date(strategy.createdAt).toLocaleDateString()}
                             </span>
                         </div>
                         <div className="h-4 w-[1px] bg-border mx-1" />
@@ -153,7 +178,7 @@ function StrategyContent() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {plan.strategy?.phases?.map((phase, idx) => (
+                {strategy.phases?.map((phase, idx) => (
                     <div key={idx} className="space-y-4">
                         <div className="flex items-center justify-between mb-2">
                             <h3 className="font-bold text-gray-500 uppercase tracking-widest text-xs">
@@ -166,7 +191,7 @@ function StrategyContent() {
                                 key={task.id}
                                 className={cn(
                                     "p-4 border-l-4 transition-all hover:shadow-md",
-                                    task.status === 'completed'
+                                    task.status !== 'PLANNED'
                                         ? "border-l-green-500 bg-green-50/10"
                                         : "border-l-blue-500"
                                 )}
@@ -175,7 +200,7 @@ function StrategyContent() {
                                     <div className="flex items-start justify-between">
                                         <div className={cn(
                                             "p-2 rounded-lg relative",
-                                            task.status === 'completed' ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700",
+                                            task.status !== 'PLANNED' ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700",
                                             currentTaskId === task.id && "animate-pulse ring-2 ring-blue-500 ring-offset-2"
                                         )}>
                                             {getIcon(task.type)}
@@ -185,7 +210,7 @@ function StrategyContent() {
                                                 </div>
                                             )}
                                         </div>
-                                        {task.status === 'completed' && (
+                                        {task.status !== 'PLANNED' && (
                                             <CheckCircle2 className="h-5 w-5 text-green-500" />
                                         )}
                                     </div>
@@ -198,19 +223,19 @@ function StrategyContent() {
                                     </div>
 
                                     <Button
-                                        variant={task.status === 'completed' ? "outline" : "outline"}
+                                        variant="outline"
                                         size="sm"
                                         className={cn(
                                             "w-full text-xs h-8 transition-all",
-                                            task.status === 'completed' && "border-green-200 hover:bg-green-50 text-green-700"
+                                            task.status !== 'PLANNED' && "border-green-200 hover:bg-green-50 text-green-700"
                                         )}
                                         onClick={() => handleExecuteTask(task)}
-                                        disabled={isActive && task.status !== 'completed'}
+                                        disabled={isActive && task.status === 'PLANNED'}
                                     >
-                                        {task.status === 'completed' ? (
+                                        {task.status !== 'PLANNED' ? (
                                             <>
                                                 <Eye className="h-3 w-3 mr-1" />
-                                                View Result
+                                                {task.status === 'PUBLISHED' ? "View Published" : "View Result"}
                                             </>
                                         ) : (
                                             <>
@@ -230,7 +255,7 @@ function StrategyContent() {
                 <div className="relative z-10 max-w-2xl">
                     <h3 className="text-2xl font-bold mb-4">Strategic Objectives</h3>
                     <ul className="space-y-3">
-                        {plan.strategy?.objectives?.map((obj, i) => (
+                        {strategy.objectives?.map((obj, i) => (
                             <li key={i} className="flex items-start gap-3 text-gray-300">
                                 <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />
                                 <span className="text-sm">{obj}</span>
@@ -240,25 +265,36 @@ function StrategyContent() {
                 </div>
                 <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-blue-600/20 rounded-full blur-3xl" />
             </div>
+
             <Dialog open={!!viewingTask} onOpenChange={(open: boolean) => !open && setViewingTask(null)}>
                 <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>{viewingTask?.title}</DialogTitle>
                         <DialogDescription>{viewingTask?.description}</DialogDescription>
                     </DialogHeader>
-                    <div className="mt-4 p-4 bg-muted rounded-lg whitespace-pre-wrap font-mono text-xs">
-                        {viewingTask?.result || "No content generated yet."}
+                    <div className="mt-4 p-4 bg-muted rounded-lg whitespace-pre-wrap font-mono text-xs overflow-auto max-h-96">
+                        {resultText}
                     </div>
-                    <div className="flex justify-end gap-3 mt-4">
-                        <Button variant="outline" onClick={() => setViewingTask(null)}>Close</Button>
-                        {viewingTask?.result && (
-                            <Button onClick={() => {
-                                navigator.clipboard.writeText(viewingTask.result!);
-                                toast.success("Copied to clipboard");
-                            }}>
-                                Copy Result
+                    <div className="flex justify-between items-center mt-4">
+                        <span className="text-xs text-muted-foreground mr-auto flex gap-2 items-center">
+                            <CheckCircle2 className="w-4 h-4 text-green-500" />
+                            Status: {viewingTask?.status || 'Unknown'}
+                        </span>
+
+                        <div className="flex gap-2">
+                            <Button variant="outline" onClick={() => setViewingTask(null)}>Close</Button>
+                            {resultText !== "No content generated yet." && (
+                                <Button onClick={() => {
+                                    navigator.clipboard.writeText(resultText);
+                                    toast.success("Copied to clipboard");
+                                }}>
+                                    Copy Result
+                                </Button>
+                            )}
+                            <Button variant="secondary" onClick={() => { router.push('/autonomous/dashboard'); }}>
+                                Open in Dashboard
                             </Button>
-                        )}
+                        </div>
                     </div>
                 </DialogContent>
             </Dialog>
