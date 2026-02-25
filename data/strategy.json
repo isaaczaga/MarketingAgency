@@ -1,0 +1,191 @@
+{
+  "id": "1d948c9b-86ec-4cfe-aaa2-ff3fa8fc160d",
+  "createdAt": "2026-02-17T00:26:06.425Z",
+  "brandProfile": {
+    "url": "https://www.homeloans.mx/",
+    "title": "HomeLoans.mx - Su Guía para Créditos Hipotecarios en México",
+    "description": "No description found",
+    "keywords": [
+      "No keywords found"
+    ],
+    "brandVoice": "Informative and straightforward, providing clear value propositions.",
+    "targetAudience": "Diverse audience interested in the brand's core offerings and values."
+  },
+  "objectives": [
+    "Increase brand awareness for HomeLoans.mx in the Mexican mortgage market by 25% within 3 months.",
+    "Drive a 30% increase in qualified organic website traffic related to mortgage loans in Mexico.",
+    "Generate a minimum of 100 new leads for mortgage consultations or pre-qualification applications.",
+    "Establish HomeLoans.mx as a trusted authority and go-to resource for mortgage information in Mexico.",
+    "Improve search engine rankings for key transactional and informational mortgage-related keywords."
+  ],
+  "phases": [
+    {
+      "id": "eff2a2fa-aad7-4cf3-93b2-59fe208b8a04",
+      "title": "Phase 1: Foundation & Awareness (Month 1)",
+      "tasks": [
+        {
+          "id": "ad3b87ad-1449-4c8b-b795-8cf7cd5f5143",
+          "phase": "Phase 1: Foundation & Awareness (Month 1)",
+          "type": "keyword",
+          "title": "Comprehensive Keyword Research & SEO Audit",
+          "description": "Conduct in-depth keyword research for 'créditos hipotecarios México', 'tasas hipotecarias', 'requisitos hipoteca', and competitor analysis. Perform a technical SEO audit of the HomeLoans.mx website to identify and fix critical issues (e.g., mobile-friendliness, site speed, broken links).",
+          "status": "APPROVED",
+          "scheduledDate": "2023-11-05",
+          "contentId": "6a67f64f-3d28-4194-a50e-1d0b7536c721"
+        },
+        {
+          "id": "b3000450-6baf-437a-b49e-8c9683e77093",
+          "phase": "Phase 1: Foundation & Awareness (Month 1)",
+          "type": "article",
+          "title": "Artículo: 'Créditos Hipotecarios en México: Guía para Principiantes'",
+          "description": "Publish a foundational article covering the basics of mortgage loans in Mexico, types of credits, and key terminology, optimized for long-tail keywords. Include clear calls to action for more information.",
+          "status": "APPROVED",
+          "scheduledDate": "2023-11-12",
+          "contentId": "6d2a6af5-d39b-4937-89a8-fa489ae9143c"
+        },
+        {
+          "id": "7347fcd4-73b0-4c28-96be-c1ec4e03a6f7",
+          "phase": "Phase 1: Foundation & Awareness (Month 1)",
+          "type": "ad",
+          "title": "Google Search Ads Campaign: 'Créditos Hipotecarios México'",
+          "description": "Launch a targeted Google Search Ads campaign focused on high-intent keywords like 'créditos hipotecarios México', 'mejor hipoteca México', 'calcular crédito hipotecario', directing traffic to optimized landing pages.",
+          "status": "APPROVED",
+          "scheduledDate": "2023-11-19",
+          "contentId": "8fe075e5-5790-4b86-8a4b-5bbf04a0ffa8"
+        },
+        {
+          "id": "62214abb-a949-410e-871c-05d70d1f9d2d",
+          "phase": "Phase 1: Foundation & Awareness (Month 1)",
+          "type": "video",
+          "title": "Video Corto: '3 Mitos Comunes sobre Créditos Hipotecarios en México'",
+          "description": "Create a short (60-90 second) animated or presenter-led video debunking common myths about mortgages in Mexico, suitable for YouTube Shorts, Instagram Reels, and Facebook. Link to the main website for more info.",
+          "status": "APPROVED",
+          "scheduledDate": "2023-11-26",
+          "contentId": "7e3fe366-41b2-401c-baf6-1b6a2e337bda"
+        },
+        {
+          "id": "8ce35a69-eb0f-40bf-b0e8-fe0f674be37a",
+          "phase": "Phase 1: Foundation & Awareness (Month 1)",
+          "type": "ad",
+          "title": "Social Media Presence Setup & Initial Content Plan",
+          "description": "Establish and optimize profiles on key platforms (Facebook, Instagram, LinkedIn). Develop a 4-week content calendar focused on educational posts, engaging questions, and promoting the initial blog post and video.",
+          "status": "APPROVED",
+          "scheduledDate": "2023-11-08",
+          "contentId": "307e7af0-651b-44e6-b62b-7bc77c272b35"
+        }
+      ]
+    },
+    {
+      "id": "2bf0491a-b4b2-4e39-a784-2b01b021e728",
+      "title": "Phase 2: Engagement & Lead Generation (Month 2)",
+      "tasks": [
+        {
+          "id": "443da9a9-a21a-4dbc-805f-b0dedd4ce41a",
+          "phase": "Phase 2: Engagement & Lead Generation (Month 2)",
+          "type": "article",
+          "title": "Artículo: 'Requisitos y Documentos Clave para Tu Crédito Hipotecario en México'",
+          "description": "Publish an in-depth article detailing the specific documents and eligibility requirements for obtaining a mortgage in Mexico, providing a practical checklist and tips. Optimize for keywords like 'requisitos hipoteca', 'documentos crédito hipotecario'.",
+          "status": "APPROVED",
+          "scheduledDate": "2023-12-03",
+          "contentId": "f367a2a6-75a1-49b8-914a-4852ef0cbd6d"
+        },
+        {
+          "id": "61ba5ff1-ff9a-41c3-9902-212a1f851441",
+          "phase": "Phase 2: Engagement & Lead Generation (Month 2)",
+          "type": "video",
+          "title": "Video Explicativo: 'El Proceso de Solicitud de Crédito Hipotecario Paso a Paso'",
+          "description": "Produce a longer-form (3-5 minute) explainer video walking potential borrowers through each stage of the mortgage application process in Mexico, from pre-qualification to closing. Host on YouTube and embed on relevant website pages.",
+          "status": "APPROVED",
+          "scheduledDate": "2023-12-10",
+          "contentId": "b639769b-9338-481e-8fb1-2e9bbd55eb1f"
+        },
+        {
+          "id": "75735eea-dc83-48c5-a28d-ee60907508a1",
+          "phase": "Phase 2: Engagement & Lead Generation (Month 2)",
+          "type": "ad",
+          "title": "Facebook/Instagram Lead Generation Ads: 'Calcula Tu Hipoteca Ideal'",
+          "description": "Launch a lead generation ad campaign on Facebook and Instagram using a lead form, offering a free 'Calculadora de Crédito Hipotecario' or 'Pre-calificación Gratuita' to capture contact information.",
+          "status": "APPROVED",
+          "scheduledDate": "2023-12-17",
+          "contentId": "a05b95fe-ffec-4f34-abad-404673e498bd"
+        },
+        {
+          "id": "92117a40-6744-4c33-bb4c-2a178398bc20",
+          "phase": "Phase 2: Engagement & Lead Generation (Month 2)",
+          "type": "podcast",
+          "title": "Episodio de Podcast/Webinar Corto: 'Preguntas Frecuentes sobre Enganche y Gastos de Escrituración'",
+          "description": "Record a short audio-only (or live webinar) session addressing common questions about down payments (enganche) and closing costs (gastos de escrituración) in Mexico. Promote on social media and the website.",
+          "status": "APPROVED",
+          "scheduledDate": "2023-12-24",
+          "contentId": "d5b57bc0-fba6-47b2-a51a-1830e93526fc"
+        },
+        {
+          "id": "74f92975-1fbf-4144-8395-e8cc07df0181",
+          "phase": "Phase 2: Engagement & Lead Generation (Month 2)",
+          "type": "keyword",
+          "title": "Content Gap Analysis & On-Page SEO Optimization",
+          "description": "Analyze performance of existing content and identify new content opportunities based on search queries. Optimize meta titles, descriptions, image alt text, and internal linking for top-performing and new pages.",
+          "status": "APPROVED",
+          "scheduledDate": "2023-12-28",
+          "contentId": "61eab068-685a-4d30-a2b0-28fa0fab45f2"
+        }
+      ]
+    },
+    {
+      "id": "1ce5b82e-4199-483a-9cc9-63ffecd7c7bc",
+      "title": "Phase 3: Optimization & Conversion (Month 3)",
+      "tasks": [
+        {
+          "id": "f2afaaf0-45a6-43f5-b8aa-edd32329856a",
+          "phase": "Phase 3: Optimization & Conversion (Month 3)",
+          "type": "ad",
+          "title": "Retargeting Ad Campaign: 'No Dejes Tu Sueño de Casa en Espera'",
+          "description": "Set up retargeting ads on Google Display Network and social media to re-engage users who visited HomeLoans.mx but didn't convert. Offer a specific incentive like a 'Consulta Gratuita con un Experto'.",
+          "status": "APPROVED",
+          "scheduledDate": "2024-01-07",
+          "contentId": "2fc62aff-a4ee-4cd4-aacc-b236dde0790e"
+        },
+        {
+          "id": "8be985d5-b148-4273-abf2-bd12a5ac21f6",
+          "phase": "Phase 3: Optimization & Conversion (Month 3)",
+          "type": "article",
+          "title": "Artículo Comparativo: 'Mejores Bancos para Créditos Hipotecarios en México 2024'",
+          "description": "Publish an in-depth comparative article analyzing different bank offerings, rates, and conditions for mortgages in Mexico, providing clear value propositions and recommendations. Update annually.",
+          "status": "APPROVED",
+          "scheduledDate": "2024-01-14",
+          "contentId": "5c5b1fc1-001c-4c43-8b48-1b7f51c1cbf3"
+        },
+        {
+          "id": "b95015e1-f3a3-4a12-9d28-7d6142c1c354",
+          "phase": "Phase 3: Optimization & Conversion (Month 3)",
+          "type": "podcast",
+          "title": "Webinar/Live Q&A: 'Decide Inteligentemente: Tasas Fijas vs. Variables en Tu Hipoteca'",
+          "description": "Host a live webinar or interactive Q&A session with a mortgage expert to discuss the pros and cons of fixed vs. variable rates, allowing direct audience interaction. Promote extensively through email and social media.",
+          "status": "APPROVED",
+          "scheduledDate": "2024-01-21",
+          "contentId": "38ed3721-9028-4f74-ae4c-566960cf46da"
+        },
+        {
+          "id": "88d3758b-8f88-45ee-9e19-85ffb07d2f9d",
+          "phase": "Phase 3: Optimization & Conversion (Month 3)",
+          "type": "keyword",
+          "title": "Landing Page Optimization & A/B Testing",
+          "description": "Conduct A/B tests on key landing pages (e.g., contact forms, pre-qualification forms) to improve conversion rates. Test headlines, CTAs, form fields, and visual elements.",
+          "status": "APPROVED",
+          "scheduledDate": "2023-01-28",
+          "contentId": "20d6ad3e-7c8d-4d7c-98d9-126c86ee1dca"
+        },
+        {
+          "id": "3ed06f24-51e3-4a23-a793-a4f04ce7a236",
+          "phase": "Phase 3: Optimization & Conversion (Month 3)",
+          "type": "article",
+          "title": "Creación de Lead Magnet Premium: 'Ebook Gratuito: Checklist Completo para Comprar Tu Casa en México'",
+          "description": "Develop a comprehensive downloadable ebook (PDF) as a lead magnet, covering the entire home-buying journey with a mortgage. Promote via website banners, blog posts, and dedicated landing pages for email capture.",
+          "status": "APPROVED",
+          "scheduledDate": "2024-01-30",
+          "contentId": "a1db0e70-9150-46eb-bdb2-0d11b31a60ba"
+        }
+      ]
+    }
+  ]
+}
