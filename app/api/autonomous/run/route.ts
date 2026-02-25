@@ -4,6 +4,7 @@ import { GoogleAdsService } from "@/lib/publishing/google-ads";
 import { SocialMediaService } from "@/lib/publishing/social-media";
 import { ContentGenerator } from "@/lib/generation/content-generator";
 import { StrategyTask } from "@/lib/types";
+import { verifyServerAuth } from "@/lib/auth-server";
 
 export const runtime = 'nodejs';
 
@@ -14,6 +15,11 @@ export const runtime = 'nodejs';
  */
 export async function POST(request: NextRequest) {
     try {
+        const user = await verifyServerAuth(request);
+        if (!user) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         const results = [];
         const errors = [];
         const strategy = await StrategyStore.get();

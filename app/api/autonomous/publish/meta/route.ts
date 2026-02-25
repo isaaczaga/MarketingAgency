@@ -2,11 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { ContentStore, StrategyStore } from "@/lib/store";
 import { publishToFacebook, publishToInstagram } from "@/lib/meta";
 import { generateNanoImages } from "@/lib/nano";
+import { verifyServerAuth } from "@/lib/auth-server";
 
 export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
     try {
+        const user = await verifyServerAuth(request);
+        if (!user) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         const { contentId } = await request.json();
 
         if (!contentId) {
@@ -38,7 +44,7 @@ export async function POST(request: NextRequest) {
         const fbResult = await publishToFacebook(`New Article Published: ${contentItem.title}\n\nRead more...`, undefined, socialImageUrl);
 
         // Publish to Instagram
-        let igResult = { success: false, error: 'No image available for Instagram' };
+        let igResult: any = { success: false, error: 'No image available for Instagram' };
         if (socialImageUrl) {
             igResult = await publishToInstagram(`New Article:\n${contentItem.title}\n\n#LinkInBio #Marketing`, socialImageUrl);
         }

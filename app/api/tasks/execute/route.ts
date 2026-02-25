@@ -6,11 +6,17 @@ import { generatePodcastScript } from "@/lib/podcast";
 import { ContentStore, StrategyStore } from "@/lib/store";
 import { ContentItem, ContentStatus, DigitalStrategy } from "@/lib/types";
 import { v4 as uuidv4 } from 'uuid';
+import { verifyServerAuth } from "@/lib/auth-server";
 
 export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
     try {
+        const user = await verifyServerAuth(request);
+        if (!user) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         const { task, brandContext, previousResults } = await request.json();
 
         if (!task || !task.type) {

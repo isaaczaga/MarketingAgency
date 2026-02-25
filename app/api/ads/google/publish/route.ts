@@ -1,8 +1,14 @@
 import { NextResponse } from 'next/server';
 import { createSearchCampaign, createAdGroupAndAds, AdContent } from '@/lib/google-ads';
+import { verifyServerAuth } from '@/lib/auth-server';
 
 export async function POST(req: Request) {
     try {
+        const user = await verifyServerAuth(req as any);
+        if (!user) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         const body = await req.json();
         const { campaignName, budget, adGroupName, adContent } = body;
 
