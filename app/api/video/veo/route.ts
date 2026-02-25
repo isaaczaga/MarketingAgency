@@ -39,28 +39,8 @@ export async function GET(request: NextRequest) {
 
         const operation = await getVeoOperation(name);
 
-        // If done, we expect 'response' in the operation object
-        if (operation.done) {
-            if (operation.error) {
-                return NextResponse.json({
-                    status: "failed",
-                    error: operation.error
-                });
-            }
-
-            // Success!
-            // The structure of 'response' depends on the model.
-            // For Veo, it typically returns a 'videos' list with 'uri'
-            // Let's return the whole operation helper for the frontend to parse
-            // or specific fields if known. 
-            // We'll return the full object for flexibility during dev.
-            return NextResponse.json({
-                status: "completed",
-                result: operation.response
-            });
-        }
-
-        return NextResponse.json({ status: "processing" });
+        // getVeoOperation already handles the 'done' check and formats the response
+        return NextResponse.json(operation);
 
     } catch (error: any) {
         console.error("Veo API GET Error:", error);
