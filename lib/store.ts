@@ -44,7 +44,9 @@ export const StrategyStore = {
         const { data: strategyData, error: stratError } = await supabase
             .from('strategies')
             .select('*')
-            .single();
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
 
         if (stratError || !strategyData) return null;
 
