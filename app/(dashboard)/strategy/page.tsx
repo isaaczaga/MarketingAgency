@@ -15,34 +15,36 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState, useCallback } from "react";
 import axios from "axios";
 import { DigitalStrategy, ContentItem, StrategyTask } from '@/lib/types';
 
 function StrategyContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { isActive, currentTaskId, toggleAutopilot } = useAutopilot();
     const [strategy, setStrategy] = useState<DigitalStrategy | null>(null);
     const [contentItems, setContentItems] = useState<ContentItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [viewingTask, setViewingTask] = useState<StrategyTask | null>(null);
     const hasAutoStarted = useRef(false);
 
-    useEffect(() => {
-        const fetchState = async () => {
-            try {
-                const res = await axios.get('/api/autonomous/state');
-                setStrategy(res.data.strategy);
-                setContentItems(res.data.content || []);
-            } catch (error) {
-                console.error("Failed to load state", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchState();
+    const fetchState = useCallback(async () => {
+        try {
+            const res = await axios.get('/api/autonomous/state');
+            setStrategy(res.data.strategy);
+            setContentItems(res.data.content || []);
+        } catch (error) {
+            console.error("Failed to load state", error);
+        } finally {
+            setLoading(false);
+        }
     }, []);
+
+    useEffect(() => {
+        fetchState();
+    }, [fetchState]);
+
+    const { isActive, currentTaskId, toggleAutopilot } = useAutopilot(strategy, fetchState);
 
     useEffect(() => {
         const autoStart = searchParams.get("autoStart") === "true";

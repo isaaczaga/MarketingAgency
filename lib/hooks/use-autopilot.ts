@@ -1,22 +1,22 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { useMarketingPlan, MarketingTask } from "./use-marketing-plan";
 import { useBrandProfile } from "./use-brand-profile";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
+import { DigitalStrategy, StrategyTask } from "@/lib/types";
 
-export function useAutopilot() {
-    const { plan, updateTaskStatus } = useMarketingPlan();
+export function useAutopilot(strategy?: DigitalStrategy | null, onRefresh?: () => void) {
     const { profile } = useBrandProfile();
     const [isActive, setIsActive] = useState(false);
     const [isExecuting, setIsExecuting] = useState(false);
     const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
 
     const executeNextTask = useCallback(async () => {
-        if (!plan || !isActive || isExecuting) return;
+        if (!strategy || !isActive || isExecuting) return;
 
         // Find the first pending task
-        const allTasks: MarketingTask[] = plan.strategy.phases.flatMap(p => p.tasks);
+        const allTasks: StrategyTask[] = strategy.phases?.flatMap(p => p.tasks) || [];
         const nextTask = allTasks.find(t => t.status === 'PLANNED');
 
         if (!nextTask) {
@@ -30,20 +30,29 @@ export function useAutopilot() {
 
         // Gather context from all completed tasks for consistency
         const previousResults = allTasks
-            .filter(t => t.status === 'completed' && t.result)
+            .filter(t => t.status !== 'PLANNED' && t.contentId) // Usually completed tasks have contentId
             .map(t => ({
                 id: t.id,
                 type: t.type,
                 title: t.title,
-                result: t.result?.substring(0, 2000) // Truncate to avoid huge prompts
-            }));
+            })); // We shouldn't send massive full content strings. Truncated on backend?
 
         try {
             console.log(`Auto-Pilot: Executing task "${nextTask.title}" (${nextTask.type})...`);
 
+            const { data: { session } } = await supabase.auth.getSession();
+            const token = session?.access_token;
+
+            if (!token) {
+                throw new Error("You must be logged in to execute tasks automatically.");
+            }
+
             const response = await fetch("/api/tasks/execute", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify({
                     task: nextTask,
                     brandContext: profile,
@@ -53,11 +62,8 @@ export function useAutopilot() {
 
             if (!response.ok) throw new Error(`Failed to execute task ${nextTask.id}`);
 
-            const data = await response.json();
-            const result = data.content || data.seoStrategy || JSON.stringify(data.adCopy || data.script);
-
-            updateTaskStatus(nextTask.id, 'completed', result);
             toast.info(`Task "${nextTask.title}" completed autonomously.`);
+            if (onRefresh) onRefresh();
 
         } catch (error: any) {
             console.error("Auto-Pilot execution error:", error);
@@ -67,7 +73,7 @@ export function useAutopilot() {
             setIsExecuting(false);
             setCurrentTaskId(null);
         }
-    }, [plan, isActive, isExecuting, profile, updateTaskStatus]);
+    }, [strategy, isActive, isExecuting, profile, onRefresh]);
 
     // Loop effect
     useEffect(() => {
