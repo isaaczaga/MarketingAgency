@@ -33,9 +33,13 @@ export async function POST(request: NextRequest) {
 
         let socialImageUrl: string | undefined;
         try {
-            // Check if content string has an image URL embedded, otherwise generate one
-            const parsedContent = typeof contentItem.content === 'string' ? contentItem.content : JSON.stringify(contentItem.content);
-            socialImageUrl = (await generateNanoImages(`Professional promotional image for blog post: ${contentItem.title}, high quality`, 1))[0];
+            // Meta APIs (especially Instagram) require a public URL, not base64.
+            const nanoResult = await generateNanoImages(`Professional promotional image for blog post: ${contentItem.title}, high quality`, 1);
+            if (nanoResult && nanoResult.length > 0) {
+                const { uploadBase64Image } = await import('@/lib/storage');
+                socialImageUrl = await uploadBase64Image(nanoResult[0]);
+                console.log("Successfully generated and uploaded image for Meta:", socialImageUrl);
+            }
         } catch (e) {
             console.error("Nano image generation skipped for Meta post", e);
         }

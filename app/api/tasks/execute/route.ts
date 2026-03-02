@@ -157,7 +157,11 @@ Provide a JSON object with:
                 // Generate a quick promotional image for Social Media
                 let socialImageUrl: string | undefined;
                 try {
-                    socialImageUrl = (await generateNanoImages(`Professional promotional image for blog post: ${task.title}, high quality`, 1))[0];
+                    const nanoResult = (await generateNanoImages(`Professional promotional image for blog post: ${task.title}, high quality`, 1));
+                    if (nanoResult && nanoResult.length > 0) {
+                        const { uploadBase64Image } = await import('@/lib/storage');
+                        socialImageUrl = await uploadBase64Image(nanoResult[0]);
+                    }
                 } catch (e) {
                     console.error("Nano image generation skipped for Meta post", e);
                 }
