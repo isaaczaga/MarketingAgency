@@ -128,63 +128,9 @@ Provide a JSON object with:
         // Save Content
         await ContentStore.save(contentItem);
 
-        // Auto-Publish Integration
+        // Auto-Publish Integration (Removed per user request)
+        // Content will now remain in PENDING_APPROVAL state for manual review in the Dashboard
         let finalStatus: ContentStatus = 'PENDING_APPROVAL';
-
-        if (task.type === 'ad') {
-            try {
-                console.log(`[Auto-Pilot] Auto-publishing Ad Campaign: ${task.title}`);
-                const { GoogleAdsService } = await import("@/lib/publishing/google-ads");
-                const publishResult = await GoogleAdsService.publish(contentItem);
-
-                if (publishResult.success) {
-                    finalStatus = 'PUBLISHED';
-                    contentItem.status = finalStatus;
-                    await ContentStore.updateStatus(contentId, finalStatus);
-                    console.log(`[Auto-Pilot] Ad Campaign published successfully!`);
-                }
-            } catch (publishErr) {
-                console.error("[Auto-Pilot] Failed to auto-publish Ad:", publishErr);
-                // Fall back to PENDING_APPROVAL on failure
-            }
-        }
-
-        if (task.type === 'article') {
-            try {
-                console.log(`[Auto-Pilot] Auto-publishing Article to Meta: ${task.title}`);
-                const { publishToFacebook, publishToInstagram } = await import("@/lib/meta");
-
-                // Generate a quick promotional image for Social Media
-                let socialImageUrl: string | undefined;
-                try {
-                    const nanoResult = (await generateNanoImages(`Professional promotional image for blog post: ${task.title}, high quality`, 1));
-                    if (nanoResult && nanoResult.length > 0) {
-                        const { uploadBase64Image } = await import('@/lib/storage');
-                        socialImageUrl = await uploadBase64Image(nanoResult[0]);
-                    }
-                } catch (e) {
-                    console.error("Nano image generation skipped for Meta post", e);
-                }
-
-                // Publish to Facebook
-                const fbResult = await publishToFacebook(`New Article Published: ${task.title}\n\n${task.description}`, undefined, socialImageUrl);
-
-                // Publish to Instagram (IG requires an image)
-                let igResult: { success: boolean, error?: string, id?: string, platform?: string } = { success: false, error: 'No image available for Instagram' };
-                if (socialImageUrl) {
-                    igResult = await publishToInstagram(`New Article:\n${task.title}\n\n${task.description}\n\n#LinkInBio`, socialImageUrl);
-                }
-
-                if (fbResult.success || igResult.success) {
-                    finalStatus = 'PUBLISHED';
-                    contentItem.status = finalStatus;
-                    await ContentStore.updateStatus(contentId, finalStatus);
-                    console.log(`[Auto-Pilot] Article published to Meta successfully! (FB: ${fbResult.success}, IG: ${igResult.success})`);
-                }
-            } catch (metaErr) {
-                console.error("[Auto-Pilot] Failed to auto-publish Article to Meta:", metaErr);
-            }
-        }
 
         // Update Strategy Task Status
         const strategy = await StrategyStore.get();
