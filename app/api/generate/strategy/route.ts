@@ -14,7 +14,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Brand profile is required" }, { status: 400 });
     }
 
+    const todayStr = new Date().toISOString().split('T')[0];
     const prompt = `
+You are an expert digital marketing strategist. Today's date is ${todayStr}.
 Generate a comprehensive 3-month digital marketing strategy for a business with the following profile:
 Title: ${brandProfile.title}
 Description: ${brandProfile.description}
@@ -33,7 +35,7 @@ The response MUST be a valid JSON object with the following structure:
           "type": "article | video | podcast | ad | keyword",
           "title": "Title of the specific task",
           "description": "Short description of what needs to be done. Be specific.",
-          "scheduledDate": "YYYY-MM-DD (approximate)"
+          "scheduledDate": "YYYY-MM-DD"
         }
       ]
     }
@@ -41,6 +43,7 @@ The response MUST be a valid JSON object with the following structure:
 }
 
 Include at least 3 phases and 4-5 tasks per phase. Ensure tasks are specific and actionable.
+IMPORTANT: All scheduledDate fields MUST be strictly in the future, starting from today (${todayStr}) and spread logically across the next 3 months.
 `;
 
     const responseText = await generateWithGemini(prompt);
