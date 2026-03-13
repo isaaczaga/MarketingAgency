@@ -46,6 +46,16 @@ export async function POST(request: NextRequest) {
 
         // Determine the text to publish based on content type
         let postBody = contentItem.content || '';
+        
+        // Ensure postBody is a string safely
+        if (typeof postBody !== 'string') {
+            try {
+                postBody = JSON.stringify(postBody);
+            } catch (e) {
+                postBody = String(postBody);
+            }
+        }
+
         try {
             if (postBody.trim().startsWith('{')) {
                 const data = JSON.parse(postBody);
@@ -56,16 +66,18 @@ export async function POST(request: NextRequest) {
         }
 
         // Clean up HTML tags and markdown blocks for social media (especially FB/IG which require plain text)
-        postBody = postBody.replace(/```html/gi, '');
-        postBody = postBody.replace(/```/g, '');
-        // Replace structural tags with newlines to preserve paragraph spacing
-        postBody = postBody.replace(/<(br|p|\/p|h1|h2|h3|h4|h5|h6|\/h1|\/h2|\/h3|\/h4|\/h5|\/h6|li|\/li)[^>]*>/gi, '\n');
-        // Strip out any remaining formatting tags (a, strong, em, span, div, etc)
-        postBody = postBody.replace(/<[^>]*>?/g, ''); 
-        // Convert basic HTML entities
-        postBody = postBody.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ');
-        // Collapse multiple blank lines down to a maximum of two (one empty line)
-        postBody = postBody.replace(/\n\s*\n\s*/g, '\n\n').trim();
+        if (typeof postBody === 'string') {
+            postBody = postBody.replace(/```html/gi, '');
+            postBody = postBody.replace(/```/g, '');
+            // Replace structural tags with newlines to preserve paragraph spacing
+            postBody = postBody.replace(/<(br|p|\/p|h1|h2|h3|h4|h5|h6|\/h1|\/h2|\/h3|\/h4|\/h5|\/h6|li|\/li)[^>]*>/gi, '\n');
+            // Strip out any remaining formatting tags (a, strong, em, span, div, etc)
+            postBody = postBody.replace(/<[^>]*>?/g, ''); 
+            // Convert basic HTML entities
+            postBody = postBody.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ');
+            // Collapse multiple blank lines down to a maximum of two (one empty line)
+            postBody = postBody.replace(/\n\s*\n\s*/g, '\n\n').trim();
+        }
 
         const facebookMessage = `New Article Published: ${contentItem.title}\n\n${postBody}`;
 
